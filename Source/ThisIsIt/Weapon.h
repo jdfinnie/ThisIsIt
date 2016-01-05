@@ -91,13 +91,16 @@ public:
 		void Instant_Fire();
 
 	UFUNCTION()
-		virtual void ProjectileFire();
+		virtual void ProjectileFire(); // this will eventually be inherited from a projectile subclass
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		FWeaponInfo WeaponInfo;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
 		TEnumAsByte<ProjectileType> ProjectileType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
+		TEnumAsByte<FireMode> FireMode;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
 		TEnumAsByte<WeaponType> WeaponType;
@@ -133,6 +136,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		int32 CurrentClip;
 
+	// Called every frame
+	virtual void Tick(float DeltaSeconds) override;
+
 	void SetOwningPawn(ACharacter *NewOwner);
 
 	void AttachToPlayer();
@@ -141,7 +147,25 @@ public:
 	void OnEquip();
 	void OnUnEquip();
 
-	void ReloadAmmo();
+	//can or should be shooting?
+	bool canFire;
+	bool isFiring;
+
+	FTimerHandle fireTimer;
+
+	FTimerHandle reloadTimer;
+
+	//reloading
+	bool isReloading;
+	bool reloadComplete;
+
+	void FireBegin();
+
+	void FireEnd();
+
+	void Reload();
+	void ReloadComplete();
+
 
 	UAudioComponent* PlayWeaponSound(USoundCue *Sound);
 

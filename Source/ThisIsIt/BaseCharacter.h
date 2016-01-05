@@ -12,12 +12,13 @@ enum  class NPCType
 	Robot		UMETA(DisplayName = "Robot"),
 };
 
-UENUM()
+UENUM(BlueprintType)
 enum  class NPCState
 {
 	Idle			UMETA(DisplayName = "Idle"),
 	Seeking			UMETA(DisplayName = "Seeking"),
 	Attacking		UMETA(DisplayName = "Attacking"),
+	Dead			UMETA(DisplayName = "Dead"),
 };
 
 UCLASS(Blueprintable)
@@ -35,6 +36,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Base Character")
 		bool isDead = false;
 
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Base Character")
+		ACharacter *target;
+
 	//calculate death helper function
 	virtual void CalculateDead();
 
@@ -45,7 +50,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
 		TEnumAsByte<NPCType> npcType;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Config)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
 		TEnumAsByte<NPCState> npcState;
 
 	UPROPERTY(EditDefaultsOnly, Category = Inventory)
@@ -74,5 +79,12 @@ public:
 
 	void GiveDefaultWeapon();
 	void EquipWeapon(AWeapon *Weapon);
+
+	void Attack();
+
+	bool isAttacking;
 	
+	NPCType GetNPCType();
+
+	NPCState defaultState;
 };

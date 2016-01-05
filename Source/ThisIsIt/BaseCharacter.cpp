@@ -22,10 +22,12 @@ void ABaseCharacter::BeginPlay()
 	if (npcType == NPCType::Robot)
 	{
 		npcState = NPCState::Seeking;
+		defaultState = NPCState::Seeking;
 	}
 	else
 	{
 		npcState = NPCState::Idle;
+		defaultState = NPCState::Idle;
 	}
 
 	GiveDefaultWeapon();
@@ -36,7 +38,50 @@ void ABaseCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-	CalculateDead();
+	if (npcState != NPCState::Dead)
+		CalculateDead();
+
+	switch (npcState)
+	{
+	case NPCState::Idle:
+		break;
+	case NPCState::Seeking:
+		break;
+	case NPCState::Attacking:
+
+		
+		if (!target) // change this to check for health before attacking? GetTargetHealth/State()?
+		{
+			npcState = NPCState::Seeking;
+			isAttacking = false;
+		}
+		else
+		{
+			if (!isAttacking)
+				Attack();
+
+			ABaseCharacter *targ = Cast<ABaseCharacter>(target);
+			if (targ)
+			{
+				if (targ->health <= 0)
+				{
+					target = NULL;
+					npcState = defaultState;
+						isAttacking = false;
+						CurrentWeapon->FireEnd();
+				}
+			}
+		}
+		break;
+	case NPCState::Dead:
+
+		if (isAttacking)
+			CurrentWeapon->FireEnd();
+
+		break;
+	default:
+		break;
+	}
 
 }
 
@@ -58,7 +103,10 @@ void ABaseCharacter::CalculateDead()
 {
 	if (health <= 0)
 	{
-		isDead = true;
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("I should be dead now"));
+		npcState = NPCState::Dead;
+
+		isDead = true; // redundant now?
 	}
 	else
 	{
@@ -103,4 +151,21 @@ void ABaseCharacter::EquipWeapon(AWeapon *Weapon)
 		CurrentWeapon->SetOwningPawn(this);
 		Weapon->OnEquip();
 	}
+}
+
+void ABaseCharacter::Attack()
+{
+	if (target)
+	{
+		if (Weapon)
+		{
+			isAttacking = true;
+			CurrentWeapon->FireBegin();
+		}
+	}
+}
+
+NPCType ABaseCharacter::GetNPCType()
+{
+	return npcType;
 }

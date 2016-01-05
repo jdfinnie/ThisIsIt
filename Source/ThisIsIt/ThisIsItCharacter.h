@@ -47,6 +47,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
 		bool isRunning;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
+		bool isPrimaryEquipped;
+
 protected:
 
 	//AWeapon *gun;

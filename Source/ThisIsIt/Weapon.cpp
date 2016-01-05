@@ -19,74 +19,101 @@ AWeapon::AWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	WeaponMesh->AttachTo(RootComponent);
 
+	canFire = true;
+
+}
+
+void AWeapon::Tick(float DeltaTime)
+{
+
+	if (isReloading && reloadComplete)
+	{
+		ReloadComplete();
+	}
+
+}
+
+void AWeapon::FireBegin()
+{
+	isFiring = true;
+
+	
+		switch (FireMode)
+		{
+		case FireMode::Single:
+			//shoot once and consume input
+			//Fire();
+			GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+			//isFiring = false;
+			break;
+		case FireMode::Burst:
+			//3 rounds then consume input
+			GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+			break;
+		case FireMode::Auto:
+			// keep firing while ammo is availalbe and button is down
+			//Fire();
+			GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+
+			break;
+		default:
+			break;
+		}
+}
+
+void AWeapon::FireEnd()
+{
+	isFiring = false;
+	//if (FireMode == FireMode::Auto)
+	//{
+		GetWorld()->GetTimerManager().ClearTimer(fireTimer);
+	//}
 }
 
 void AWeapon::Fire()
 {
-	if (FireEffect)
+	if (CurrentClip > 0)
 	{
-
-		UGameplayStatics::SpawnEmitterAttached
-			(FireEffect,
-			WeaponMesh,
-			FName("Muzzle"),
-			WeaponMesh->GetSocketLocation("Muzzle"),
-			GetActorRotation(),
-			EAttachLocation::KeepWorldPosition,
-			true);
-	}
-
-	if (FireAnim)
-	{
-		WeaponMesh->PlayAnimation(FireAnim, false);
-		
-	}
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "TryingToFire?");
-	if (ProjectileType == ProjectileType::Bullet)
-	{
-		if (CurrentClip > 0)
+		if (FireEffect)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("Bullet"));
-			Instant_Fire();
-			PlayWeaponSound(FireSound);
-			CurrentClip -= 1;
+
+			UGameplayStatics::SpawnEmitterAttached
+				(FireEffect,
+				WeaponMesh,
+				FName("Muzzle"),
+				WeaponMesh->GetSocketLocation("Muzzle"),
+				GetActorRotation(),
+				EAttachLocation::KeepWorldPosition,
+				true);
 		}
-		else
+
+		if (FireAnim)
 		{
-			ReloadAmmo();
+			WeaponMesh->PlayAnimation(FireAnim, false);
 		}
-	}
-	if (ProjectileType == ProjectileType::Spread)
-	{
-		if (CurrentClip > 0)
+
+		if (ProjectileType == ProjectileType::Bullet)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("Spread"));
-			for (int32 i = 0; i <= WeaponInfo.WeaponSpread; i++)
-			{
 				Instant_Fire();
-			}
-			PlayWeaponSound(FireSound);
-			CurrentClip -= 1;
 		}
-		else
+		if (ProjectileType == ProjectileType::Spread)
 		{
-			ReloadAmmo();
+				for (int32 i = 0; i <= WeaponInfo.WeaponSpread; i++)
+				{
+					Instant_Fire();
+				}
 		}
+		if (ProjectileType == ProjectileType::Projectile)
+		{
+				ProjectileFire();
+		}
+
+		PlayWeaponSound(FireSound);
+		CurrentClip -= 1;
 	}
-	if (ProjectileType == ProjectileType::Projectile)
+	else
 	{
-		if (CurrentClip > 0)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("Projectile"));
-			ProjectileFire();
-			PlayWeaponSound(FireSound);
-			CurrentClip -= 1;
-		}
-		else
-		{
-			ReloadAmmo();
-		}
+		Reload();
 	}
 }
 
@@ -128,10 +155,17 @@ void AWeapon::DetachFromPlayer()
 	WeaponMesh->SetHiddenInGame(true);
 }
 
-void AWeapon::ReloadAmmo()
+void AWeapon::Reload()
 {
 	if (CurrentAmmo > 0)
-	{
+		GetWorldTimerManager().SetTimer(reloadTimer, this, &AWeapon::ReloadComplete, 2, false, false);
+
+}
+
+void AWeapon::ReloadComplete() // this kinda sucks, i dont think its actually doing what I want
+{
+	//if (CurrentAmmo > 0)
+	//{
 		if (CurrentAmmo < WeaponInfo.MaxClip)
 		{
 			CurrentClip = CurrentAmmo;
@@ -141,11 +175,18 @@ void AWeapon::ReloadAmmo()
 			CurrentAmmo -= WeaponInfo.MaxClip;
 			CurrentClip += WeaponInfo.MaxClip;
 		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0, FColor::Blue, "NO AMMO");
-	}
+
+		GetWorld()->GetTimerManager().ClearTimer(reloadTimer);
+
+		isReloading = false;
+		reloadComplete = false;
+
+		canFire = true;
+	//}
+	//else
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 2.0, FColor::Blue, "NO AMMO");
+	//}
 }
 
 void AWeapon::Instant_Fire()
@@ -159,10 +200,11 @@ void AWeapon::Instant_Fire()
 
 	//if this is the player, adjust to where the camera is looking
 	AThisIsItCharacter *player = Cast<AThisIsItCharacter>(MyPawn);
+
 	if (player)
 		AimDir =  player->GetFollowCamera()->GetForwardVector();
 	else
-		WeaponMesh->GetSocketRotation("Muzzle").Vector();
+		AimDir = WeaponMesh->GetSocketRotation("Muzzle").Vector();
 
 	const FVector StartTrace = WeaponMesh->GetSocketLocation("Muzzle");
 
@@ -198,7 +240,7 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 {
 	const FVector EndTrace = Origin + ShootDir * WeaponInfo.WeaponRange;
 	const FVector EndPoint = Impact.GetActor() ? Impact.ImpactPoint : EndTrace;
-	DrawDebugLine(this->GetWorld(), Origin, Impact.TraceEnd, FColor::Red, true, 10000, 10.f);
+	//DrawDebugLine(this->GetWorld(), Origin, Impact.TraceEnd, FColor::Red, true, 10000, 10.f);
 
 	if (HitEffect)
 	{
@@ -212,17 +254,56 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 			true);
 	}
 
-	ABaseCharacter *Enemy = Cast<ABaseCharacter>(Impact.GetActor());
-	if (Enemy)
+	//who got hit?
+	ABaseCharacter *hitNPC = Cast<ABaseCharacter>(Impact.GetActor());
+
+	AThisIsItCharacter *hitPlayer = Cast<AThisIsItCharacter>(Impact.GetActor());
+
+	//wgho fired?
+	AThisIsItCharacter *playerOwner = Cast<AThisIsItCharacter>(MyPawn);
+	ABaseCharacter *NPCOwner = Cast<ABaseCharacter>(MyPawn);
+
+
+	//was an NPC hit?
+	if (hitNPC)
 	{
-		Enemy->CalculateHealth(-WeaponInfo.Damage);
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "YOU HIT AN ENEMY!!");
+		//hit by another npc?
+		if (NPCOwner)
+		{
+			if (hitNPC->GetNPCType() != NPCOwner->GetNPCType())
+			{
+				hitNPC->CalculateHealth(-WeaponInfo.Damage);
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "YOU HIT AN ENEMY!!");
+			}
+		}
+		
+		//hit by player?
+		if (playerOwner)
+		{
+			//not on the same team?
+			if (hitNPC->GetNPCType() != NPCType::Human)
+			{
+				hitNPC->CalculateHealth(-WeaponInfo.Damage);
+			}
+		}
+	}
+	else if (hitPlayer)
+	{
+		//no firendly fire
+		if (NPCOwner->GetNPCType() != NPCType::Human)
+		{
+			//dummy function while im here... implement eventually
+			//playerOwner->TakeDamage(WeaponInfo.Damage);
+
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "Player Hit!");
+		}
+
 	}
 }
 
 void AWeapon::ProjectileFire()
 {
-
+	//this will launch an actual projectile like a rocket or the likes
 }
 
 UAudioComponent* AWeapon::PlayWeaponSound(USoundCue *Sound)

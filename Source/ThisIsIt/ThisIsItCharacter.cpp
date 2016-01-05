@@ -145,6 +145,7 @@ void AThisIsItCharacter::GiveDefaultWeapon()
 	if (Spawner)
 	{
 		EquipWeapon(Spawner);
+		isPrimaryEquipped = true;
 	}
 }
 
@@ -170,15 +171,16 @@ void AThisIsItCharacter::EquipWeapon(AWeapon *Weapon)
 
 void AThisIsItCharacter::SwitchWeapons()
 {
-	AWeapon *temp = Cast<AWeapon>(PrimaryWeapon);
+	//AWeapon *temp = Cast<AWeapon>(PrimaryWeapon);
 
 	//is primary equipped?
-	if (CurrentWeapon == temp)
+	if (isPrimaryEquipped)
 	{
 		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(SecondaryWeapon);
 		if (Spawner)
 		{
 			EquipWeapon(Spawner);
+			isPrimaryEquipped = false;
 		}
 	}
 	else
@@ -187,6 +189,7 @@ void AThisIsItCharacter::SwitchWeapons()
 		if (Spawner)
 		{
 			EquipWeapon(Spawner);
+			isPrimaryEquipped = true;
 		}
 	}
 }
@@ -197,7 +200,8 @@ void AThisIsItCharacter::RightTriggerStart()
 
 	if (CurrentWeapon != NULL)
 	{
-		CurrentWeapon->Fire();
+		//CurrentWeapon->Fire();
+		CurrentWeapon->FireBegin();
 	}
 	else
 	{
@@ -207,12 +211,22 @@ void AThisIsItCharacter::RightTriggerStart()
 
 void AThisIsItCharacter::RightTriggerStop()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UN-BANG!"));
+	if (CurrentWeapon != NULL)
+	{
+		//CurrentWeapon->Fire();
+		CurrentWeapon->FireEnd();
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "current weapon is null");
+	}
 }
 
 void AThisIsItCharacter::LeftTriggerStart()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aiming!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aiming!"));
+
+	SwitchWeapons();
 }
 
 void AThisIsItCharacter::LeftTriggerStop()
