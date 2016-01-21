@@ -5,7 +5,7 @@
 #include "ThisIsItCharacter.generated.h"
 
 UCLASS(config=Game)
-class AThisIsItCharacter : public ACharacter
+class AThisIsItCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -35,17 +35,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
-	UPROPERTY(EditDefaultsOnly, Category = Inventory)
-		TSubclassOf<class AWeapon> PrimaryWeapon;
+	//UPROPERTY(EditDefaultsOnly, Category = Inventory)
+	//	TSubclassOf<class AWeapon> PrimaryWeapon;
 
-	UPROPERTY(EditDefaultsOnly, Category = Inventory)
-		TSubclassOf<class AWeapon> SecondaryWeapon;
+	//UPROPERTY(EditDefaultsOnly, Category = Inventory)
+	//	TSubclassOf<class AWeapon> SecondaryWeapon;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Weapon)
-		AWeapon *CurrentWeapon;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
+	//	AWeapon *CurrentWeapon;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
-		bool isRunning;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
+	//	bool isRunning;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isPrimaryEquipped;

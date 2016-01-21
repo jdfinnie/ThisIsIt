@@ -135,13 +135,13 @@ void AThisIsItCharacter::MoveRight(float Value)
 void AThisIsItCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	GiveDefaultWeapon();
+	//GiveDefaultWeapon();
 }
 
 
 void AThisIsItCharacter::GiveDefaultWeapon()
 {
-	AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(PrimaryWeapon);
+	AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.primaryWeapon);
 	if (Spawner)
 	{
 		EquipWeapon(Spawner);
@@ -176,7 +176,7 @@ void AThisIsItCharacter::SwitchWeapons()
 	//is primary equipped?
 	if (isPrimaryEquipped)
 	{
-		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(SecondaryWeapon);
+		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.secondaryWeapon);
 		if (Spawner)
 		{
 			EquipWeapon(Spawner);
@@ -185,7 +185,7 @@ void AThisIsItCharacter::SwitchWeapons()
 	}
 	else
 	{
-		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(PrimaryWeapon);
+		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.primaryWeapon);
 		if (Spawner)
 		{
 			EquipWeapon(Spawner);

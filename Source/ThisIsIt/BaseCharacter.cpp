@@ -19,15 +19,15 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (npcType == NPCType::Robot)
+	if (type == Type::Robot)
 	{
-		npcState = NPCState::Seeking;
-		defaultState = NPCState::Seeking;
+		state = State::Seeking;
+		defaultState = State::Seeking;
 	}
 	else
 	{
-		npcState = NPCState::Idle;
-		defaultState = NPCState::Idle;
+		state = State::Idle;
+		defaultState = State::Idle;
 	}
 
 	GiveDefaultWeapon();
@@ -38,46 +38,54 @@ void ABaseCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-	if (npcState != NPCState::Dead)
+	if (state != State::Dead)
 		CalculateDead();
 
-	switch (npcState)
+	switch (state)
 	{
-	case NPCState::Idle:
+	case State::Idle:
 		break;
-	case NPCState::Seeking:
+	case State::Seeking:
 		break;
-	case NPCState::Attacking:
+	case State::Attacking:
 
 		
 		if (!target) // change this to check for health before attacking? GetTargetHealth/State()?
 		{
-			npcState = NPCState::Seeking;
+			state = State::Seeking;
 			isAttacking = false;
+			//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I have no target");
 		}
 		else
 		{
-			if (!isAttacking)
+			if (!isAttacking && CanShoot())
 				Attack();
 
 			ABaseCharacter *targ = Cast<ABaseCharacter>(target);
 			if (targ)
 			{
+				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "target aquired");
 				if (targ->health <= 0)
 				{
 					target = NULL;
-					npcState = defaultState;
-						isAttacking = false;
-						CurrentWeapon->FireEnd();
+					state = defaultState;
+					isAttacking = false;
+					CurrentWeapon->FireEnd();
+
+					//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "target is dead. get outta here");
 				}
 			}
 		}
 		break;
-	case NPCState::Dead:
-
+	case State::Dead:
+		//jus tin case
+		isDead = true;
 		if (isAttacking)
+		{
 			CurrentWeapon->FireEnd();
-
+			CurrentWeapon->OnUnEquip();
+			isAttacking = false;
+		}
 		break;
 	default:
 		break;
@@ -89,13 +97,13 @@ void ABaseCharacter::Tick( float DeltaTime )
 void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
-
 }
 
 //calculate health
 void ABaseCharacter::CalculateHealth(float delta)
 {
-	health += delta;
+	float result = delta * ((100 - stats.armorValue) / 100);
+	health += result;
 	CalculateDead();
 }
 //calculate dead
@@ -103,10 +111,9 @@ void ABaseCharacter::CalculateDead()
 {
 	if (health <= 0)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("I should be dead now"));
-		npcState = NPCState::Dead;
-
-		isDead = true; // redundant now?
+		//just go with it...
+		state = State::Dead;
+		isDead = true; 
 	}
 	else
 	{
@@ -127,7 +134,7 @@ void ABaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& propertyChang
 
 void ABaseCharacter::GiveDefaultWeapon()
 {
-	AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(Weapon);
+	AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.primaryWeapon);
 	if (Spawner)
 	{
 		EquipWeapon(Spawner);
@@ -157,7 +164,7 @@ void ABaseCharacter::Attack()
 {
 	if (target)
 	{
-		if (Weapon)
+		if (CurrentWeapon)
 		{
 			isAttacking = true;
 			CurrentWeapon->FireBegin();
@@ -165,7 +172,25 @@ void ABaseCharacter::Attack()
 	}
 }
 
-NPCType ABaseCharacter::GetNPCType()
+//there should be a stop attacking that returns to default state
+
+void ABaseCharacter::ReloadComplete()
 {
-	return npcType;
+	isReloading = false;
+	CurrentWeapon->ReloadComplete();
+	//isReloading = false;
+}
+
+bool ABaseCharacter::CanShoot()
+{
+	if (isReloading || isJumping || isSwapingWeapons || isRunning)
+		return false;
+
+	return true;
+}
+
+
+Type ABaseCharacter::GetType()
+{
+	return type;
 }

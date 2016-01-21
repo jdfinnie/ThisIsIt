@@ -13,16 +13,6 @@ AThisIsItGameMode::AThisIsItGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
-
-	//if (HUDWidgetClass != NULL) 
-	//{
-	//	currentWidget = CreateWidget<UUserWidget>(GetWorld(), HUDWidgetClass);
-	//	if (currentWidget != NULL)
-	//	{
-	//		currentWidget->AddToViewport();
-	//	}
-
-	//}
 }
 
 void AThisIsItGameMode::Tick(float DeltaSeconds)

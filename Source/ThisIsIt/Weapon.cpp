@@ -26,11 +26,6 @@ AWeapon::AWeapon()
 void AWeapon::Tick(float DeltaTime)
 {
 
-	if (isReloading && reloadComplete)
-	{
-		ReloadComplete();
-	}
-
 }
 
 void AWeapon::FireBegin()
@@ -158,14 +153,20 @@ void AWeapon::DetachFromPlayer()
 void AWeapon::Reload()
 {
 	if (CurrentAmmo > 0)
-		GetWorldTimerManager().SetTimer(reloadTimer, this, &AWeapon::ReloadComplete, 2, false, false);
+	{
+		ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn);
+
+		//isReloading = true;
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "starting reload");
+		pawn->isReloading = true;
+		canFire = false;
+
+	}
 
 }
 
 void AWeapon::ReloadComplete() // this kinda sucks, i dont think its actually doing what I want
 {
-	//if (CurrentAmmo > 0)
-	//{
 		if (CurrentAmmo < WeaponInfo.MaxClip)
 		{
 			CurrentClip = CurrentAmmo;
@@ -176,17 +177,13 @@ void AWeapon::ReloadComplete() // this kinda sucks, i dont think its actually do
 			CurrentClip += WeaponInfo.MaxClip;
 		}
 
-		GetWorld()->GetTimerManager().ClearTimer(reloadTimer);
+		//GetWorld()->GetTimerManager().ClearTimer(reloadTimer);
 
-		isReloading = false;
-		reloadComplete = false;
+		//isReloading = false;
 
 		canFire = true;
-	//}
-	//else
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 2.0, FColor::Blue, "NO AMMO");
-	//}
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "reload complete");
+
 }
 
 void AWeapon::Instant_Fire()
@@ -197,16 +194,22 @@ void AWeapon::Instant_Fire()
 	const float SpreadCone = FMath::DegreesToRadians(WeaponInfo.WeaponSpread * 0.5);
 
 	FVector AimDir;
-
+	FVector StartTrace;
 	//if this is the player, adjust to where the camera is looking
 	AThisIsItCharacter *player = Cast<AThisIsItCharacter>(MyPawn);
 
 	if (player)
-		AimDir =  player->GetFollowCamera()->GetForwardVector();
+	{
+		AimDir = player->GetFollowCamera()->GetForwardVector();
+		StartTrace = player->GetFollowCamera()->GetComponentLocation();
+	}
 	else
-		AimDir = WeaponMesh->GetSocketRotation("Muzzle").Vector();
+	{
+		AimDir = MyPawn->GetActorForwardVector();//WeaponMesh->GetSocketRotation("Muzzle").Vector();
+		StartTrace = WeaponMesh->GetSocketLocation("Muzzle");
+	}
 
-	const FVector StartTrace = WeaponMesh->GetSocketLocation("Muzzle");
+	//const FVector StartTrace = WeaponMesh->GetSocketLocation("Muzzle");
 
 
 	const FVector ShootDir = WeaponRandomStream.VRandCone(AimDir, SpreadCone, SpreadCone);
@@ -239,9 +242,25 @@ FHitResult AWeapon::WeaponTrace(const FVector &TraceFrom, const FVector &TraceTo
 void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin, const FVector &ShootDir, int32 RandomSeed, float ReticleSpread)
 {
 	const FVector EndTrace = Origin + ShootDir * WeaponInfo.WeaponRange;
-	const FVector EndPoint = Impact.GetActor() ? Impact.ImpactPoint : EndTrace;
+	 FVector EndPoint;// = Impact.GetActor() ? Impact.ImpactPoint : EndTrace;
+	
+	 bool hit;
+
+	if (Impact.GetActor())
+	{
+		EndPoint = Impact.ImpactPoint;
+		hit = true;
+	}
+	else
+	{
+		EndPoint = EndTrace;
+		hit = false;
+	}
+
 	//DrawDebugLine(this->GetWorld(), Origin, Impact.TraceEnd, FColor::Red, true, 10000, 10.f);
 
+	if (hit)
+	{
 	if (HitEffect)
 	{
 		UGameplayStatics::SpawnEmitterAttached
@@ -257,10 +276,10 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 	//who got hit?
 	ABaseCharacter *hitNPC = Cast<ABaseCharacter>(Impact.GetActor());
 
-	AThisIsItCharacter *hitPlayer = Cast<AThisIsItCharacter>(Impact.GetActor());
+	//AThisIsItCharacter *hitPlayer = Cast<AThisIsItCharacter>(Impact.GetActor());
 
 	//wgho fired?
-	AThisIsItCharacter *playerOwner = Cast<AThisIsItCharacter>(MyPawn);
+	//AThisIsItCharacter *playerOwner = Cast<AThisIsItCharacter>(MyPawn);
 	ABaseCharacter *NPCOwner = Cast<ABaseCharacter>(MyPawn);
 
 
@@ -270,34 +289,34 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 		//hit by another npc?
 		if (NPCOwner)
 		{
-			if (hitNPC->GetNPCType() != NPCOwner->GetNPCType())
+			if (hitNPC->GetType() != NPCOwner->GetType())
 			{
 				hitNPC->CalculateHealth(-WeaponInfo.Damage);
 				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "YOU HIT AN ENEMY!!");
 			}
 		}
-		
+
 		//hit by player?
-		if (playerOwner)
-		{
-			//not on the same team?
-			if (hitNPC->GetNPCType() != NPCType::Human)
-			{
-				hitNPC->CalculateHealth(-WeaponInfo.Damage);
-			}
-		}
-	}
-	else if (hitPlayer)
-	{
+		//	if (playerOwner)
+		//	{
+		//not on the same team?
+		//		if (hitNPC->GetType() != Type::Human)
+		//		{
+		//			hitNPC->CalculateHealth(-WeaponInfo.Damage);
+		//		}
+		//	}
+		//}
+		//else if (hitPlayer)
+		//{
 		//no firendly fire
-		if (NPCOwner->GetNPCType() != NPCType::Human)
-		{
-			//dummy function while im here... implement eventually
-			//playerOwner->TakeDamage(WeaponInfo.Damage);
+		//	if (NPCOwner->GetType() != Type::Human)
+		//	{
+		//dummy function while im here... implement eventually
+		//playerOwner->TakeDamage(WeaponInfo.Damage);
 
-			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "Player Hit!");
-		}
-
+		//		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "Player Hit!");
+		//	}
+	}
 	}
 }
 

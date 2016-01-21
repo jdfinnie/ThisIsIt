@@ -52,8 +52,8 @@ struct FWeaponInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		float TimeBetweenShots;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
-		int32 ShotCost;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
+	//	int32 ShotCost;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		float WeaponRange;
@@ -64,8 +64,8 @@ struct FWeaponInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		FString Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
-		UTexture2D* SplashArt;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
+	//	UTexture2D* SplashArt;
 
 };
 
@@ -130,10 +130,10 @@ public:
 		UAnimSequence* ReloadAnim;
 
 	//not sure about these last two...
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Config)
 		int32 CurrentAmmo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Config)
 		int32 CurrentClip;
 
 	// Called every frame
@@ -156,8 +156,8 @@ public:
 	FTimerHandle reloadTimer;
 
 	//reloading
-	bool isReloading;
-	bool reloadComplete;
+	//bool isReloading;
+	//bool reloadComplete;
 
 	void FireBegin();
 

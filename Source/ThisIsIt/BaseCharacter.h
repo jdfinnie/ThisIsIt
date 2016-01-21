@@ -6,19 +6,46 @@
 #include "BaseCharacter.generated.h"
 
 UENUM(BlueprintType)
-enum  class NPCType
+enum  class Type
 {
 	Human		UMETA(DisplayName = "Human"),
 	Robot		UMETA(DisplayName = "Robot"),
 };
 
 UENUM(BlueprintType)
-enum  class NPCState
+enum  class State
 {
 	Idle			UMETA(DisplayName = "Idle"),
 	Seeking			UMETA(DisplayName = "Seeking"),
 	Attacking		UMETA(DisplayName = "Attacking"),
 	Dead			UMETA(DisplayName = "Dead"),
+};
+
+USTRUCT()
+struct FBaseStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaseStats)
+		int32 health_Max;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaseStats)
+		int32 energy_Max;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaseStats)
+		int32 stamina_Max;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaseStats)
+		int32 moveSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaseStats)
+		int32 armorValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapons)
+		TSubclassOf<class AWeapon> primaryWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapons)
+		TSubclassOf<class AWeapon> secondaryWeapon;
 };
 
 UCLASS(Blueprintable)
@@ -40,6 +67,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Base Character")
 		ACharacter *target;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "potential targets")
+	TArray<ACharacter*> potentialTargets;
+
 	//calculate death helper function
 	virtual void CalculateDead();
 
@@ -48,15 +78,18 @@ public:
 		virtual void CalculateHealth(float delta);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
-		TEnumAsByte<NPCType> npcType;
+		TEnumAsByte<Type> type;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
-		TEnumAsByte<NPCState> npcState;
+		TEnumAsByte<State> state;
 
-	UPROPERTY(EditDefaultsOnly, Category = Inventory)
-		TSubclassOf<class AWeapon> Weapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
+		FBaseStats stats;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Weapon)
+	//UPROPERTY(EditDefaultsOnly, Category = Inventory)
+	//	TSubclassOf<class AWeapon> Weapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
 		AWeapon *CurrentWeapon;
 
 #if WITH_EDITOR
@@ -82,9 +115,29 @@ public:
 
 	void Attack();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
 	bool isAttacking;
-	
-	NPCType GetNPCType();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	bool isRunning;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	bool isJumping;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	bool isAiming;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	bool tryJump;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	bool isReloading;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	bool isSwapingWeapons;
 
-	NPCState defaultState;
+	UFUNCTION(BlueprintCallable, Category = "Base Character")
+	void ReloadComplete();
+	//void SwapWeaponsComplete();
+	
+	bool CanShoot(); // ? !reloading, switching,jumping,running
+
+	
+	Type GetType();
+
+	State defaultState;
 };
