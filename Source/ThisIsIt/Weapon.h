@@ -36,7 +36,7 @@ enum  class FireMode
 };
 
 USTRUCT()
-struct FWeaponInfo
+public struct FWeaponInfo
 {
 	GENERATED_BODY()
 
