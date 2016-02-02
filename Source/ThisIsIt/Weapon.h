@@ -8,7 +8,8 @@
 
 class AThisIsItCharacter;
 
-#define TRACE_WEAPON ECC_GameTraceChannel1
+//#define TRACE_WEAPON ECC_GameTraceChannel1
+#define TRACE_WEAPON ECC_WorldDynamic
 
 UENUM(BlueprintType)
 enum  class WeaponType
