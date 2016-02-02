@@ -48,37 +48,33 @@ void ABaseCharacter::Tick( float DeltaTime )
 	case State::Seeking:
 		break;
 	case State::Attacking:
-
 		
-		if (!target) // change this to check for health before attacking? GetTargetHealth/State()?
+		if (!target)
 		{
-			state = State::Seeking;
+			state = defaultState;
 			isAttacking = false;
-			//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I have no target");
 		}
 		else
 		{
 			if (!isAttacking && CanShoot())
 				Attack();
 
+			//the cast here may be redundant... test it out when you (James) have a chance
 			ABaseCharacter *targ = Cast<ABaseCharacter>(target);
 			if (targ)
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "target aquired");
 				if (targ->health <= 0)
 				{
 					target = NULL;
 					state = defaultState;
 					isAttacking = false;
 					CurrentWeapon->FireEnd();
-
-					//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "target is dead. get outta here");
 				}
 			}
 		}
 		break;
 	case State::Dead:
-		//jus tin case
+		//just in case
 		isDead = true;
 		if (isAttacking)
 		{
@@ -102,8 +98,12 @@ void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* InputCompo
 //calculate health
 void ABaseCharacter::CalculateHealth(float delta)
 {
-	float result = delta * ((100 - stats.armorValue) / 100);
-	health += result;
+	//something like this for percentage based damage mitigation... should be set at onCreate to avoif having to do this all the time (unless we plan to alter it) 
+	//float mit = 100 - stats.armorValue;
+	//float damage = delta * (mit / 100);
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::SanitizeFloat(damage));
+
+	health -= delta;
 	CalculateDead();
 }
 //calculate dead
@@ -145,7 +145,6 @@ void ABaseCharacter::EquipWeapon(AWeapon *Weapon)
 {
 	if (CurrentWeapon != NULL)
 	{
-		//CurrentWeapon = Inventory[CurrentWeapon->WeaponConfig.Priority];
 		CurrentWeapon->OnUnEquip();
 		CurrentWeapon = Weapon;
 		Weapon->SetOwningPawn(this);
@@ -154,7 +153,6 @@ void ABaseCharacter::EquipWeapon(AWeapon *Weapon)
 	else
 	{
 		CurrentWeapon = Weapon;
-		//CurrentWeapon = Inventory[CurrentWeapon->WeaponConfig.Priority];
 		CurrentWeapon->SetOwningPawn(this);
 		Weapon->OnEquip();
 	}
@@ -172,13 +170,23 @@ void ABaseCharacter::Attack()
 	}
 }
 
-//there should be a stop attacking that returns to default state
+//StopAttacking() - return player to default state and all that stuff
 
+//there should be a stop attacking that returns to default state
+void ABaseCharacter::Reload()
+{
+	isReloading = true;
+	if (isAttacking)
+	{
+		isAttacking = false;
+	}
+}
+
+//the animation blueprint calls this function when the reload anim finishes
 void ABaseCharacter::ReloadComplete()
 {
 	isReloading = false;
 	CurrentWeapon->ReloadComplete();
-	//isReloading = false;
 }
 
 bool ABaseCharacter::CanShoot()

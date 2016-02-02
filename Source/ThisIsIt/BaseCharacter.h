@@ -130,6 +130,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
 	bool isSwapingWeapons;
 
+	void Reload();
+
 	UFUNCTION(BlueprintCallable, Category = "Base Character")
 	void ReloadComplete();
 	//void SwapWeaponsComplete();

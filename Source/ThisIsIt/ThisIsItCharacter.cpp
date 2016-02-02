@@ -19,8 +19,7 @@ AThisIsItCharacter::AThisIsItCharacter()
 	BaseLookUpRate = 45.f;
 
 	// Configure character movement
-	//GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); 
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
@@ -106,16 +105,12 @@ void AThisIsItCharacter::LookUpAtRate(float Rate)
 void AThisIsItCharacter::MoveForward(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
-	{
-		//AddMovementInput(GetActorForwardVector(), Value);
-	
+	{	
 		const bool bLimitRotation = (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling());
 		const FRotator Rotation = bLimitRotation ? GetActorRotation() : Controller->GetControlRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
 
 		AddMovementInput(Direction, Value);
-
-		//testing
 	}
 }
 
@@ -135,7 +130,6 @@ void AThisIsItCharacter::MoveRight(float Value)
 void AThisIsItCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	//GiveDefaultWeapon();
 }
 
 
@@ -153,7 +147,6 @@ void AThisIsItCharacter::EquipWeapon(AWeapon *Weapon)
 {
 	if (CurrentWeapon != NULL)
 	{
-		//CurrentWeapon = Inventory[CurrentWeapon->WeaponConfig.Priority];
 		CurrentWeapon->OnUnEquip();
 		CurrentWeapon = Weapon;
 		Weapon->SetOwningPawn(this);
@@ -162,7 +155,6 @@ void AThisIsItCharacter::EquipWeapon(AWeapon *Weapon)
 	else
 	{
 		CurrentWeapon = Weapon;
-		//CurrentWeapon = Inventory[CurrentWeapon->WeaponConfig.Priority];
 		CurrentWeapon->SetOwningPawn(this);
 		Weapon->OnEquip();
 	}
@@ -171,8 +163,6 @@ void AThisIsItCharacter::EquipWeapon(AWeapon *Weapon)
 
 void AThisIsItCharacter::SwitchWeapons()
 {
-	//AWeapon *temp = Cast<AWeapon>(PrimaryWeapon);
-
 	//is primary equipped?
 	if (isPrimaryEquipped)
 	{
@@ -200,7 +190,6 @@ void AThisIsItCharacter::RightTriggerStart()
 
 	if (CurrentWeapon != NULL)
 	{
-		//CurrentWeapon->Fire();
 		CurrentWeapon->FireBegin();
 	}
 	else
@@ -255,6 +244,7 @@ void AThisIsItCharacter::LeftBumper()
 
 void AThisIsItCharacter::TopButton()
 {
+	//just for now. should be moved to options
 	invert *= -1;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Inverting Y"));
 }

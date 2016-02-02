@@ -35,24 +35,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
-	//UPROPERTY(EditDefaultsOnly, Category = Inventory)
-	//	TSubclassOf<class AWeapon> PrimaryWeapon;
-
-	//UPROPERTY(EditDefaultsOnly, Category = Inventory)
-	//	TSubclassOf<class AWeapon> SecondaryWeapon;
-
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
-	//	AWeapon *CurrentWeapon;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
-	//	bool isRunning;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isPrimaryEquipped;
 
 protected:
 
-	//AWeapon *gun;
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
 

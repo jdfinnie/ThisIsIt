@@ -36,7 +36,7 @@ enum  class FireMode
 };
 
 USTRUCT()
-public struct FWeaponInfo
+struct FWeaponInfo
 {
 	GENERATED_BODY()
 
@@ -52,9 +52,6 @@ public struct FWeaponInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		float TimeBetweenShots;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo)
-	//	int32 ShotCost;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		float WeaponRange;
 
@@ -63,10 +60,6 @@ public struct FWeaponInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		FString Name;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
-	//	UTexture2D* SplashArt;
-
 };
 
 /**
@@ -76,9 +69,6 @@ UCLASS()
 class THISISIT_API AWeapon : public AActor
 {
 	GENERATED_BODY()
-
-		//UPROPERTY(EditAnywhere, Category = Mesh)
-	//class USkeletalMeshComponent* gunMesh;
 
 public:
 	// Sets default values for this character's properties
@@ -111,6 +101,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Config)
 		USkeletalMeshComponent* WeaponMesh;
 
+	//some day...
 	//UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	//	TSubclassOf<class ARocket> ProjectileClass;
 
@@ -155,10 +146,6 @@ public:
 
 	FTimerHandle reloadTimer;
 
-	//reloading
-	//bool isReloading;
-	//bool reloadComplete;
-
 	void FireBegin();
 
 	void FireEnd();
@@ -166,9 +153,7 @@ public:
 	void Reload();
 	void ReloadComplete();
 
-
 	UAudioComponent* PlayWeaponSound(USoundCue *Sound);
-
 
 protected:
 

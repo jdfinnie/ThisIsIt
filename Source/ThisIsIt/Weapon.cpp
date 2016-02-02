@@ -32,37 +32,36 @@ void AWeapon::FireBegin()
 {
 	isFiring = true;
 
+	//setting a timer to automatically fire again when the fire time has passed. cancels when button is released
+	//good for player/automatic weapons. Great for controlling AI shooting
+	GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
 	
-		switch (FireMode)
-		{
-		case FireMode::Single:
-			//shoot once and consume input
-			//Fire();
-			GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
-			//isFiring = false;
-			break;
-		case FireMode::Burst:
-			//3 rounds then consume input
-			GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
-			break;
-		case FireMode::Auto:
-			// keep firing while ammo is availalbe and button is down
-			//Fire();
-			GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+		//switch (FireMode)
+		//{
+		//case FireMode::Single:
+		//	//shoot once and consume input
+		//	GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+		//	break;
+		//case FireMode::Burst:
+		//	//3 rounds then consume input
+		//	GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+		//	break;
+		//case FireMode::Auto:
+		//	// keep firing while ammo is availalbe and button is down
+		//	GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
 
-			break;
-		default:
-			break;
-		}
+		//	break;
+		//default:
+		//	break;
+		//}
 }
 
 void AWeapon::FireEnd()
 {
 	isFiring = false;
-	//if (FireMode == FireMode::Auto)
-	//{
-		GetWorld()->GetTimerManager().ClearTimer(fireTimer);
-	//}
+
+	GetWorld()->GetTimerManager().ClearTimer(fireTimer);
+
 }
 
 void AWeapon::Fire()
@@ -91,14 +90,14 @@ void AWeapon::Fire()
 		{
 				Instant_Fire();
 		}
-		if (ProjectileType == ProjectileType::Spread)
+		else if (ProjectileType == ProjectileType::Spread)
 		{
 				for (int32 i = 0; i <= WeaponInfo.WeaponSpread; i++)
 				{
 					Instant_Fire();
 				}
 		}
-		if (ProjectileType == ProjectileType::Projectile)
+		else if (ProjectileType == ProjectileType::Projectile)
 		{
 				ProjectileFire();
 		}
@@ -123,7 +122,6 @@ void AWeapon::SetOwningPawn(ACharacter * NewOwner)
 
 void AWeapon::OnEquip()
 {
-	//CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AttachToPlayer();
 }
 
@@ -156,9 +154,7 @@ void AWeapon::Reload()
 	{
 		ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn);
 
-		//isReloading = true;
-		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "starting reload");
-		pawn->isReloading = true;
+		pawn->Reload();
 		canFire = false;
 
 	}
@@ -177,13 +173,7 @@ void AWeapon::ReloadComplete() // this kinda sucks, i dont think its actually do
 			CurrentClip += WeaponInfo.MaxClip;
 		}
 
-		//GetWorld()->GetTimerManager().ClearTimer(reloadTimer);
-
-		//isReloading = false;
-
 		canFire = true;
-		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "reload complete");
-
 }
 
 void AWeapon::Instant_Fire()
@@ -195,6 +185,7 @@ void AWeapon::Instant_Fire()
 
 	FVector AimDir;
 	FVector StartTrace;
+
 	//if this is the player, adjust to where the camera is looking
 	AThisIsItCharacter *player = Cast<AThisIsItCharacter>(MyPawn);
 
@@ -208,9 +199,6 @@ void AWeapon::Instant_Fire()
 		AimDir = MyPawn->GetActorForwardVector();//WeaponMesh->GetSocketRotation("Muzzle").Vector();
 		StartTrace = WeaponMesh->GetSocketLocation("Muzzle");
 	}
-
-	//const FVector StartTrace = WeaponMesh->GetSocketLocation("Muzzle");
-
 
 	const FVector ShootDir = WeaponRandomStream.VRandCone(AimDir, SpreadCone, SpreadCone);
 	
@@ -242,7 +230,7 @@ FHitResult AWeapon::WeaponTrace(const FVector &TraceFrom, const FVector &TraceTo
 void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin, const FVector &ShootDir, int32 RandomSeed, float ReticleSpread)
 {
 	const FVector EndTrace = Origin + ShootDir * WeaponInfo.WeaponRange;
-	 FVector EndPoint;// = Impact.GetActor() ? Impact.ImpactPoint : EndTrace;
+	 FVector EndPoint;
 	
 	 bool hit;
 
@@ -257,66 +245,43 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 		hit = false;
 	}
 
-	//DrawDebugLine(this->GetWorld(), Origin, Impact.TraceEnd, FColor::Red, true, 10000, 10.f);
-
 	if (hit)
 	{
-	if (HitEffect)
-	{
-		UGameplayStatics::SpawnEmitterAttached
-			(HitEffect,
-			RootComponent,
-			NAME_None,
-			EndPoint,
-			GetActorRotation(),
-			EAttachLocation::KeepWorldPosition,
-			true);
-	}
-
-	//who got hit?
-	ABaseCharacter *hitNPC = Cast<ABaseCharacter>(Impact.GetActor());
-
-	//AThisIsItCharacter *hitPlayer = Cast<AThisIsItCharacter>(Impact.GetActor());
-
-	//wgho fired?
-	//AThisIsItCharacter *playerOwner = Cast<AThisIsItCharacter>(MyPawn);
-	ABaseCharacter *NPCOwner = Cast<ABaseCharacter>(MyPawn);
-
-
-	//was an NPC hit?
-	if (hitNPC)
-	{
-		//hit by another npc?
-		if (NPCOwner)
+		if (HitEffect)
 		{
-			if (hitNPC->GetType() != NPCOwner->GetType())
-			{
-				hitNPC->CalculateHealth(-WeaponInfo.Damage);
-				//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "YOU HIT AN ENEMY!!");
-			}
+			UGameplayStatics::SpawnEmitterAttached
+				(HitEffect,
+				RootComponent,
+				NAME_None,
+				EndPoint,
+				GetActorRotation(),
+				EAttachLocation::KeepWorldPosition,
+				true);
 		}
 
-		//hit by player?
-		//	if (playerOwner)
-		//	{
-		//not on the same team?
-		//		if (hitNPC->GetType() != Type::Human)
-		//		{
-		//			hitNPC->CalculateHealth(-WeaponInfo.Damage);
-		//		}
-		//	}
-		//}
-		//else if (hitPlayer)
-		//{
-		//no firendly fire
-		//	if (NPCOwner->GetType() != Type::Human)
-		//	{
-		//dummy function while im here... implement eventually
-		//playerOwner->TakeDamage(WeaponInfo.Damage);
+		//who got hit?
+		ABaseCharacter *hitNPC = Cast<ABaseCharacter>(Impact.GetActor());
 
-		//		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "Player Hit!");
-		//	}
-	}
+		//AThisIsItCharacter *hitPlayer = Cast<AThisIsItCharacter>(Impact.GetActor());
+
+		//wgho fired?
+		//AThisIsItCharacter *playerOwner = Cast<AThisIsItCharacter>(MyPawn);
+		ABaseCharacter *NPCOwner = Cast<ABaseCharacter>(MyPawn);
+
+
+		//was an NPC hit?
+		if (hitNPC)
+		{
+			//hit by another npc?
+			if (NPCOwner)
+			{
+				if (hitNPC->GetType() != NPCOwner->GetType())
+				{
+					hitNPC->CalculateHealth(WeaponInfo.Damage);
+					//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "YOU HIT AN ENEMY!!");
+				}
+			}
+		}
 	}
 }
 
