@@ -13,6 +13,11 @@ public:
 	virtual void Tick(float DeltaSeconds) override; //may be needed later
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	TSubclassOf<class ABaseCharacter> test;
+
+	void SpawnCharacter(TSubclassOf<class ABaseCharacter> actor, FVector location, FRotator rotation);
+
 protected:
 
 	//https://www.youtube.com/watch?v=jbM4VU8oPYI

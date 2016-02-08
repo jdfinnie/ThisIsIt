@@ -21,6 +21,9 @@ AWeapon::AWeapon()
 
 	canFire = true;
 
+	CurrentAmmo = WeaponInfo.MaxAmmo;
+	CurrentClip = WeaponInfo.MaxClip;
+
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -122,6 +125,9 @@ void AWeapon::SetOwningPawn(ACharacter * NewOwner)
 
 void AWeapon::OnEquip()
 {
+	CurrentAmmo = WeaponInfo.MaxAmmo;
+	CurrentClip = WeaponInfo.MaxClip;
+
 	AttachToPlayer();
 }
 
