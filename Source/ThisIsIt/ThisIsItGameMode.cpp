@@ -19,7 +19,7 @@ AThisIsItGameMode::AThisIsItGameMode()
 	static ConstructorHelpers::FClassFinder<ABaseCharacter> EnemyPawnBPClass(TEXT("Blueprint'/Game/Characters/Attacker'"));
 	if (EnemyPawnBPClass.Class != NULL)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I FOUND THE CHARACTER!!");
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I FOUND THE CHARACTER!!");
 		test = EnemyPawnBPClass.Class;
 	}
 	else
