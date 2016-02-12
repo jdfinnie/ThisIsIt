@@ -16,6 +16,9 @@ public:
 	UPROPERTY()
 	TSubclassOf<class ABaseCharacter> test;
 
+	FVector spawnPos;
+	FRotator spawnRot;
+
 	void SpawnCharacter(TSubclassOf<class ABaseCharacter> actor, FVector location, FRotator rotation);
 
 protected:

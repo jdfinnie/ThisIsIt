@@ -19,15 +19,13 @@ AThisIsItGameMode::AThisIsItGameMode()
 	static ConstructorHelpers::FClassFinder<ABaseCharacter> EnemyPawnBPClass(TEXT("Blueprint'/Game/Characters/Attacker'"));
 	if (EnemyPawnBPClass.Class != NULL)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I FOUND THE CHARACTER!!");
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I FOUND THE CHARACTER!!");
 		test = EnemyPawnBPClass.Class;
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "CHARACTER WAS NULL");
 	}
-
-
 }
 
 void AThisIsItGameMode::BeginPlay()
@@ -43,8 +41,24 @@ void AThisIsItGameMode::BeginPlay()
 		}
 	}
 
-	//spawn initial enemies and allies
+	//find spawn points 
+	for (TActorIterator<ATargetPoint> TargetItr(GetWorld()); TargetItr; ++TargetItr)
+	{
+		if (TargetItr->ActorHasTag("EnemySpawn"))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I found a target to spawn?");
 
+			spawnPos = TargetItr->GetActorLocation();
+			spawnRot = TargetItr->GetActorRotation();
+		}
+	}
+
+	//StartRound()
+	//spawn initial enemies and allies
+	for (int i = 0; i < 10; i++)
+	{
+		SpawnCharacter(test, spawnPos, spawnRot);
+	}
 	//add enemies to list for tracking
 
 	//start round timer
