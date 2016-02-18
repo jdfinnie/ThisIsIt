@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "BaseCharacter.h"
+#include "Projectile.h"
 #include "Weapon.generated.h"
 
 class AThisIsItCharacter;
@@ -79,10 +80,10 @@ public:
 		void Fire();
 
 	UFUNCTION()
-		void Instant_Fire();
+		void InstantFire();
 
 	UFUNCTION()
-		virtual void ProjectileFire(); // this will eventually be inherited from a projectile subclass
+		 void ProjectileFire();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		FWeaponInfo WeaponInfo;
@@ -102,9 +103,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Config)
 		USkeletalMeshComponent* WeaponMesh;
 
-	//some day...
-	//UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	//	TSubclassOf<class ARocket> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+		TSubclassOf<class AProjectile> Projectile;
 
 	UPROPERTY(EditDefaultsOnly, Category = Config)
 		USoundCue *FireSound;

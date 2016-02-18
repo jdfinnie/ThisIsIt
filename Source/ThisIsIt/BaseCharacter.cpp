@@ -80,6 +80,7 @@ void ABaseCharacter::Tick( float DeltaTime )
 		{
 			CurrentWeapon->FireEnd();
 			CurrentWeapon->OnUnEquip();
+			CurrentWeapon->Destroy();
 			isAttacking = false;
 		}
 		break;
@@ -134,6 +135,7 @@ void ABaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& propertyChang
 
 void ABaseCharacter::GiveDefaultWeapon()
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Base Equip Default");
 	AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.primaryWeapon);
 	if (Spawner)
 	{

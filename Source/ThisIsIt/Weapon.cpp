@@ -28,7 +28,10 @@ AWeapon::AWeapon()
 
 void AWeapon::Tick(float DeltaTime)
 {
-
+	if (CurrentClip <= 0 && CurrentAmmo > 0)
+	{
+		Reload();
+	}
 }
 
 void AWeapon::FireBegin()
@@ -91,13 +94,13 @@ void AWeapon::Fire()
 
 		if (ProjectileType == ProjectileType::Bullet)
 		{
-				Instant_Fire();
+				InstantFire();
 		}
 		else if (ProjectileType == ProjectileType::Spread)
 		{
 				for (int32 i = 0; i <= WeaponInfo.WeaponSpread; i++)
 				{
-					Instant_Fire();
+					InstantFire();
 				}
 		}
 		else if (ProjectileType == ProjectileType::Projectile)
@@ -110,7 +113,7 @@ void AWeapon::Fire()
 	}
 	else
 	{
-		Reload();
+		//Reload();
 	}
 }
 
@@ -158,11 +161,15 @@ void AWeapon::Reload()
 {
 	if (CurrentAmmo > 0)
 	{
-		ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn);
-
-		pawn->Reload();
-		canFire = false;
-
+		if (MyPawn)
+		{
+			ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn);
+			if (pawn)
+			{
+				pawn->Reload();
+				canFire = false;
+			}
+		}
 	}
 
 }
@@ -182,7 +189,7 @@ void AWeapon::ReloadComplete() // this kinda sucks, i dont think its actually do
 		canFire = true;
 }
 
-void AWeapon::Instant_Fire()
+void AWeapon::InstantFire()
 {
 	const int32 RandomSeed = FMath::Rand();
 	FRandomStream WeaponRandomStream(RandomSeed);
@@ -268,10 +275,7 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 		//who got hit?
 		ABaseCharacter *hitNPC = Cast<ABaseCharacter>(Impact.GetActor());
 
-		//AThisIsItCharacter *hitPlayer = Cast<AThisIsItCharacter>(Impact.GetActor());
-
-		//wgho fired?
-		//AThisIsItCharacter *playerOwner = Cast<AThisIsItCharacter>(MyPawn);
+		//who fired?
 		ABaseCharacter *NPCOwner = Cast<ABaseCharacter>(MyPawn);
 
 
@@ -291,9 +295,44 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 	}
 }
 
+
+
 void AWeapon::ProjectileFire()
 {
 	//this will launch an actual projectile like a rocket or the likes
+	if (Projectile)
+	{
+		FRotator rot;
+
+		//if this is the player, adjust the rotation to match the aim 
+		AThisIsItCharacter *player = Cast<AThisIsItCharacter>(MyPawn);
+
+		if (player)
+		{
+			rot = player->GetFollowCamera()->GetComponentRotation();
+		}
+		else
+		{
+			//rot = WeaponMesh->GetSocketRotation("Muzzle"); // horribly inaccurate
+			rot = Instigator->GetActorRotation(); // this might make them a little too accurate
+		}
+
+		FVector pos = WeaponMesh->GetSocketLocation("Muzzle");
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = Instigator;
+
+		AProjectile *const proj = GetWorld()->SpawnActor<AProjectile>(Projectile, pos, rot, SpawnParams);
+		if (proj)
+		{
+
+		}
+	}
+	else
+	{
+		//there is no projectile attached...
+	}
 }
 
 UAudioComponent* AWeapon::PlayWeaponSound(USoundCue *Sound)

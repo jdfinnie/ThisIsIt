@@ -37,6 +37,7 @@ AThisIsItCharacter::AThisIsItCharacter()
 	invert = -1;
 
 	isRunning = false;
+	isPrimaryEquipped = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,6 +131,7 @@ void AThisIsItCharacter::MoveRight(float Value)
 void AThisIsItCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	//SwitchWeapons();
 }
 
 
@@ -166,6 +168,7 @@ void AThisIsItCharacter::SwitchWeapons()
 	//is primary equipped?
 	if (isPrimaryEquipped)
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "switch to secondary");
 		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.secondaryWeapon);
 		if (Spawner)
 		{
@@ -178,6 +181,7 @@ void AThisIsItCharacter::SwitchWeapons()
 		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.primaryWeapon);
 		if (Spawner)
 		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "switch to primary");
 			EquipWeapon(Spawner);
 			isPrimaryEquipped = true;
 		}
@@ -191,6 +195,7 @@ void AThisIsItCharacter::RightTriggerStart()
 	if (CurrentWeapon != NULL)
 	{
 		CurrentWeapon->FireBegin();
+		isAttacking = true;
 	}
 	else
 	{
@@ -202,7 +207,7 @@ void AThisIsItCharacter::RightTriggerStop()
 {
 	if (CurrentWeapon != NULL)
 	{
-		//CurrentWeapon->Fire();
+		isAttacking = false;
 		CurrentWeapon->FireEnd();
 	}
 	else
