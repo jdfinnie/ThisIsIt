@@ -163,7 +163,7 @@ void AWeapon::Reload()
 	{
 		if (MyPawn)
 		{
-			ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn);
+			ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn); //this throws a SERIOUS crash sometimes but I cant figure out why?
 			if (pawn)
 			{
 				pawn->Reload();

@@ -115,6 +115,7 @@ void ABaseCharacter::CalculateDead()
 		//just go with it...
 		state = State::Dead;
 		isDead = true; 
+		CurrentWeapon->Destroy();
 	}
 	else
 	{
