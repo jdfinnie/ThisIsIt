@@ -165,27 +165,27 @@ void AThisIsItCharacter::EquipWeapon(AWeapon *Weapon)
 
 void AThisIsItCharacter::SwitchWeapons()
 {
-	//is primary equipped?
-	if (isPrimaryEquipped)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "switch to secondary");
-		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.secondaryWeapon);
-		if (Spawner)
+		//is primary equipped?
+		if (isPrimaryEquipped)
 		{
-			EquipWeapon(Spawner);
-			isPrimaryEquipped = false;
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "switch to secondary");
+			AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.secondaryWeapon);
+			if (Spawner)
+			{
+				EquipWeapon(Spawner);
+				isPrimaryEquipped = false;
+			}
 		}
-	}
-	else
-	{
-		AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.primaryWeapon);
-		if (Spawner)
+		else
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "switch to primary");
-			EquipWeapon(Spawner);
-			isPrimaryEquipped = true;
+			AWeapon *Spawner = GetWorld()->SpawnActor<AWeapon>(stats.primaryWeapon);
+			if (Spawner)
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "switch to primary");
+				EquipWeapon(Spawner);
+				isPrimaryEquipped = true;
+			}
 		}
-	}
 }
 
 //it might be better to seperate these out into a different class and leave this just to handle input...
@@ -219,8 +219,8 @@ void AThisIsItCharacter::RightTriggerStop()
 void AThisIsItCharacter::LeftTriggerStart()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aiming!"));
-
-	SwitchWeapons();
+	if (!isReloading && !isAttacking)
+		SwitchWeapons();
 }
 
 void AThisIsItCharacter::LeftTriggerStop()

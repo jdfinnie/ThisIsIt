@@ -12,8 +12,8 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	//set collision componenet
-	//CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
-	//RootComponent = CollisionComp;
+	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
+	RootComponent = CollisionComp;
 
 	//set weapon mesh
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
@@ -159,16 +159,26 @@ void AWeapon::DetachFromPlayer()
 
 void AWeapon::Reload()
 {
-	if (CurrentAmmo > 0)
+	if (MyPawn)
 	{
-		if (MyPawn)
+		if (MyPawn->IsValidLowLevel())
 		{
-			ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn); //this throws a SERIOUS crash sometimes but I cant figure out why?
-			if (pawn)
+			if (CurrentAmmo > 0)
 			{
-				pawn->Reload();
-				canFire = false;
+
+				ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn); //this throws a SERIOUS crash sometimes but I cant figure out why?
+				if (pawn)
+				{
+					pawn->Reload();
+					canFire = false;
+				}
 			}
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I JUST SAVED YOUR ASS!!!!!");
+			MyPawn = NULL;
+			//not a valid object?
 		}
 	}
 
@@ -326,7 +336,7 @@ void AWeapon::ProjectileFire()
 		AProjectile *const proj = GetWorld()->SpawnActor<AProjectile>(Projectile, pos, rot, SpawnParams);
 		if (proj)
 		{
-
+			proj->Damage = WeaponInfo.Damage;
 		}
 	}
 	else

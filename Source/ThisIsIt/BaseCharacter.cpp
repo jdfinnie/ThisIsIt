@@ -80,7 +80,8 @@ void ABaseCharacter::Tick( float DeltaTime )
 		{
 			CurrentWeapon->FireEnd();
 			CurrentWeapon->OnUnEquip();
-			CurrentWeapon->Destroy();
+			//CurrentWeapon->Destroy();
+			CurrentWeapon->ConditionalBeginDestroy();
 			isAttacking = false;
 		}
 		break;
@@ -115,7 +116,8 @@ void ABaseCharacter::CalculateDead()
 		//just go with it...
 		state = State::Dead;
 		isDead = true; 
-		CurrentWeapon->Destroy();
+		//CurrentWeapon->Destroy();
+		CurrentWeapon->ConditionalBeginDestroy();
 	}
 	else
 	{

@@ -69,6 +69,8 @@ void AProjectile::OnCollision(AActor *OtherActor, UPrimitiveComponent *OtherComp
 		}
 	}
 
-	Destroy();
+	//Destroy(); //Destroy actually lets actors keep ticking a bit, causing some big crashes 
+	//bAutoDestroyWhenFinished = true; // useful as an alternative but fussy
+	ConditionalBeginDestroy(); // best option found so far...
 }
 
