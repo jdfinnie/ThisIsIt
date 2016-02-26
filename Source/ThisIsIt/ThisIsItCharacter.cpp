@@ -219,13 +219,15 @@ void AThisIsItCharacter::RightTriggerStop()
 void AThisIsItCharacter::LeftTriggerStart()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aiming!"));
-	if (!isReloading && !isAttacking)
-		SwitchWeapons();
+	isAiming = true;
+	FollowCamera->FieldOfView = 60;
 }
 
 void AThisIsItCharacter::LeftTriggerStop()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("not aiming"));
+	isAiming = false;
+	FollowCamera->FieldOfView = 90;
 }
 
 void AThisIsItCharacter::RightBumperStart()
@@ -257,9 +259,14 @@ void AThisIsItCharacter::TopButton()
 void AThisIsItCharacter::RightButton()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Right Button!"));
+	if (!isReloading && !isAttacking)
+		SwitchWeapons();
 }
 
 void AThisIsItCharacter::LeftButton()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Reloading!"));
+	if (!isReloading)
+		Reload();
+
 }

@@ -193,7 +193,7 @@ void AWeapon::ReloadComplete() // this kinda sucks, i dont think its actually do
 		else
 		{
 			CurrentAmmo -= WeaponInfo.MaxClip;
-			CurrentClip += WeaponInfo.MaxClip;
+			CurrentClip = WeaponInfo.MaxClip;
 		}
 
 		canFire = true;
