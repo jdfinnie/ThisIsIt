@@ -176,7 +176,7 @@ void AWeapon::Reload()
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I JUST SAVED YOUR ASS!!!!!");
+			//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I JUST SAVED YOUR ASS!!!!!");
 			MyPawn = NULL;
 			//not a valid object?
 		}

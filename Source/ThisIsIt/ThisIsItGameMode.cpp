@@ -24,7 +24,7 @@ AThisIsItGameMode::AThisIsItGameMode()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "CHARACTER WAS NULL");
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "CHARACTER WAS NULL");
 	}
 
 
