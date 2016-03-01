@@ -81,6 +81,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = Event)
 		virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;

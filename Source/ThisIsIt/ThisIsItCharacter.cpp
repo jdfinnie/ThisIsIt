@@ -134,6 +134,35 @@ void AThisIsItCharacter::BeginPlay()
 	//SwitchWeapons();
 }
 
+void AThisIsItCharacter::Tick(float DeltaSeconds)
+{
+	//this is here to override the base tick which can cause problems
+
+	if (state != State::Dead)
+		CalculateDead();
+
+	switch (state)
+	{
+	case State::Idle:
+		break;
+	case State::Seeking:
+		break;
+	case State::Attacking:
+		break;
+	case State::Dead:
+		//just in case
+		isDead = true;
+		isAttacking = false;
+
+		CurrentWeapon->FireEnd();
+
+		GetCapsuleComponent()->SetActive(false);
+
+		break;
+	default:
+		break;
+	}
+}
 
 void AThisIsItCharacter::GiveDefaultWeapon()
 {

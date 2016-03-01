@@ -82,7 +82,7 @@ void AWeapon::Fire()
 				WeaponMesh,
 				FName("Muzzle"),
 				WeaponMesh->GetSocketLocation("Muzzle"),
-				GetActorRotation(),
+				WeaponMesh->GetSocketRotation("Muzzle"),
 				EAttachLocation::KeepWorldPosition,
 				true);
 		}

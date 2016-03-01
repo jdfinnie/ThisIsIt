@@ -59,7 +59,7 @@ void ABaseCharacter::Tick( float DeltaTime )
 			if (!isAttacking && CanShoot())
 				Attack();
 
-			//the cast here may be redundant... test it out when you (James) have a chance
+			//the cast here may be redundant...
 			ABaseCharacter *targ = Cast<ABaseCharacter>(target);
 			if (targ)
 			{
@@ -76,15 +76,15 @@ void ABaseCharacter::Tick( float DeltaTime )
 	case State::Dead:
 		//just in case
 		isDead = true;
-		if (isAttacking)
-		{
-			CurrentWeapon->FireEnd();
-			CurrentWeapon->OnUnEquip();
-			//CurrentWeapon->Destroy();
-			CurrentWeapon->ConditionalBeginDestroy();
-			isAttacking = false;
-			GetCapsuleComponent()->SetActive(false);
-		}
+		isAttacking = false;
+
+		CurrentWeapon->FireEnd();
+		CurrentWeapon->OnUnEquip();
+
+		CurrentWeapon->ConditionalBeginDestroy();
+			
+		GetCapsuleComponent()->SetActive(false);
+
 		break;
 	default:
 		break;
@@ -118,7 +118,7 @@ void ABaseCharacter::CalculateDead()
 		state = State::Dead;
 		isDead = true; 
 		//CurrentWeapon->Destroy();
-		CurrentWeapon->ConditionalBeginDestroy();
+		//CurrentWeapon->ConditionalBeginDestroy();
 	}
 	else
 	{
