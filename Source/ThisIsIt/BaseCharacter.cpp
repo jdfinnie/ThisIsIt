@@ -83,6 +83,7 @@ void ABaseCharacter::Tick( float DeltaTime )
 			//CurrentWeapon->Destroy();
 			CurrentWeapon->ConditionalBeginDestroy();
 			isAttacking = false;
+			GetCapsuleComponent()->SetActive(false);
 		}
 		break;
 	default:
