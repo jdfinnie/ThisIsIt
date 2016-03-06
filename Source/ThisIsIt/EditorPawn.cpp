@@ -99,14 +99,14 @@ void AEditorPawn::MoveForward(float Value)
 
 			if (Value > 0)
 			{
-				if (move.X < 29000)
+				if (move.X < 1000)
 				{
 					move.X += stepDistance;
 				}
 			}
 			else
 			{
-				if (move.X > 1000)
+				if (move.X > -29000)
 				{
 					move.X -= stepDistance;
 				}
@@ -134,7 +134,7 @@ void AEditorPawn::MoveRight(float Value)
 
 			if (Value < 0)
 			{
-				if (move.Y > 1000)
+				if (move.Y > -1000)
 				{
 					move.Y -= stepDistance;
 				}
