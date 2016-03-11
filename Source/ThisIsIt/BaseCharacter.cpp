@@ -46,6 +46,10 @@ void ABaseCharacter::Tick( float DeltaTime )
 	case State::Idle:
 		break;
 	case State::Seeking:
+
+		if (isAttacking)
+			isAttacking = false;
+
 		break;
 	case State::Attacking:
 		
