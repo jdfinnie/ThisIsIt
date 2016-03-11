@@ -115,7 +115,7 @@ public:
 
 	void Attack();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Actions")
 	bool isAttacking;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
 	bool isRunning;
@@ -125,7 +125,7 @@ public:
 	bool isAiming;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
 	bool tryJump;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Actions")
 	bool isReloading;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
 	bool isSwapingWeapons;

@@ -44,9 +44,14 @@ void ABaseCharacter::Tick( float DeltaTime )
 	switch (state)
 	{
 	case State::Idle:
+		CurrentWeapon->FireEnd();
+
+		if (isAttacking)
+			isAttacking = false;
 		break;
 	case State::Seeking:
-
+		CurrentWeapon->FireEnd();
+		
 		if (isAttacking)
 			isAttacking = false;
 
