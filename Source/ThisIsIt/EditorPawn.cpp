@@ -93,7 +93,7 @@ void AEditorPawn::MoveForward(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
-		if (canMove == true)
+		if (!menuOpen && canMove)
 		{
 			FVector move = RootComponent->GetRelativeTransform().GetLocation();
 
@@ -128,7 +128,7 @@ void AEditorPawn::MoveRight(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
-		if (canMove == true)
+		if (!menuOpen && canMove)
 		{
 			FVector move = RootComponent->GetRelativeTransform().GetLocation();
 
@@ -194,12 +194,18 @@ void AEditorPawn::LeftTriggerStop()
 
 void AEditorPawn::RightBumperStart()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle right"));
+	if (menuOpen)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle right"));
+	}
 }
 
 void AEditorPawn::LeftBumper()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle Left"));
+	if (menuOpen)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle left"));
+	}
 }
 
 void AEditorPawn::TopButton()
@@ -207,14 +213,14 @@ void AEditorPawn::TopButton()
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("menu"));
 	
 	Menu();
-	if (menuOpen)
-	{
-		canMove = false;
-	}
-	else
-	{
-		canMove = true;
-	}
+	//if (menuOpen)
+	//{
+	//	canMove = false;
+	//}
+	//else
+	//{
+	//	canMove = true;
+	//}
 }
 
 void AEditorPawn::RightButton()
