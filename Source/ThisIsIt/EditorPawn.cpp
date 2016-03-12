@@ -32,6 +32,17 @@ AEditorPawn::AEditorPawn()
 	stepDistance = 1000;
 
 	menuOpen = false;
+
+	FString small = "Small";
+	Buttons.Add(small);
+
+	FString med = "Medium";
+	Buttons.Add(med);
+
+	FString large = "Large";
+	Buttons.Add(large);
+
+	CurrentButton = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,11 +79,24 @@ void AEditorPawn::SetupPlayerInputComponent(class UInputComponent* InputComponen
 	InputComponent->BindAction("LeftButton", IE_Pressed, this, &AEditorPawn::LeftButton);
 	//InputComponent->BindAction("LeftButton", IE_Released, this, &ACharacter::StopJumping);
 
+	InputComponent->BindAction("Start", IE_Pressed, this, &AEditorPawn::Start);
+	InputComponent->BindAction("Select", IE_Pressed, this, &AEditorPawn::Select);
+
 	//A-Button
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AEditorPawn::BottomButton);
 
 	InputComponent->BindAxis("MoveForward", this, &AEditorPawn::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AEditorPawn::MoveRight);
+}
+
+void AEditorPawn::Start()
+{
+
+}
+
+void AEditorPawn::Select()
+{
+
 }
 
 void AEditorPawn::TurnAtRate(float Rate)
@@ -93,7 +117,7 @@ void AEditorPawn::MoveForward(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
-		if (!menuOpen && canMove)
+		if (canMove)
 		{
 			FVector move = RootComponent->GetRelativeTransform().GetLocation();
 
@@ -128,7 +152,7 @@ void AEditorPawn::MoveRight(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
-		if (!menuOpen && canMove)
+		if (canMove)
 		{
 			FVector move = RootComponent->GetRelativeTransform().GetLocation();
 
@@ -197,6 +221,16 @@ void AEditorPawn::RightBumperStart()
 	if (menuOpen)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle right"));
+		if (Buttons.IsValidIndex(CurrentButton + 1))
+		{
+			CurrentButton += 1;
+		}
+		else
+		{
+			CurrentButton = 0;
+		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
 	}
 }
 
@@ -205,22 +239,23 @@ void AEditorPawn::LeftBumper()
 	if (menuOpen)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle left"));
+		if (Buttons.IsValidIndex(CurrentButton - 1))
+		{
+			CurrentButton -= 1;
+		}
+		else
+		{
+			CurrentButton = Buttons.Num() - 1;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
 	}
 }
 
 void AEditorPawn::TopButton()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("menu"));
-	
-	Menu();
-	//if (menuOpen)
-	//{
-	//	canMove = false;
-	//}
-	//else
-	//{
-	//	canMove = true;
-	//}
+	if (!isBuildingSelected)
+		Menu();
 }
 
 void AEditorPawn::RightButton()
@@ -246,17 +281,19 @@ void AEditorPawn::LeftButton()
 void AEditorPawn::BottomButton()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("pickup"));
-	
-	if (!isBuildingSelected)
+	if (!menuOpen)
 	{
-		//raycast to pick up building
-		PickUpBuilding();
-	}
-	else
-	{
-		//if its not colliding with another building
-		//place selected building at new spot
-		PlaceBuilding();
+		if (!isBuildingSelected)
+		{
+			//raycast to pick up building
+			PickUpBuilding();
+		}
+		else
+		{
+			//if its not colliding with another building
+			//place selected building at new spot
+			PlaceBuilding();
+		}
 	}
 
 }

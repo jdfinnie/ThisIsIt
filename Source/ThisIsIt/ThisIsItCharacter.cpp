@@ -77,6 +77,9 @@ void AThisIsItCharacter::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAction("LeftButton", IE_Pressed, this, &AThisIsItCharacter::LeftButton);
 	//InputComponent->BindAction("LeftButton", IE_Released, this, &ACharacter::StopJumping);
 
+	InputComponent->BindAction("Start", IE_Pressed, this, &AThisIsItCharacter::Start);
+	InputComponent->BindAction("Select", IE_Pressed, this, &AThisIsItCharacter::Select);
+
 	InputComponent->BindAxis("MoveForward", this, &AThisIsItCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AThisIsItCharacter::MoveRight);
 
@@ -87,6 +90,16 @@ void AThisIsItCharacter::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAxis("TurnRate", this, &AThisIsItCharacter::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &AThisIsItCharacter::LookUpAtRate);
+}
+
+void AThisIsItCharacter::Start()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Start");
+}
+
+void AThisIsItCharacter::Select()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Select");
 }
 
 void AThisIsItCharacter::TurnAtRate(float Rate)

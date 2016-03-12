@@ -63,6 +63,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 		bool menuOpen;
 
+	TArray<FString> Buttons;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Editor)
+	int32 CurrentButton;
+
 	FTimerHandle moveTimer;
 	bool canMove;
 
@@ -105,6 +110,9 @@ protected:
 	void BottomButton();
 
 	void ResetMove();
+
+	void Start();
+	void Select();
 
 	//UFUNCTION(BlueprintCallable, Category = Event)
 	//	virtual void BeginPlay() override;

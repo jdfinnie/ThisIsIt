@@ -7,11 +7,14 @@
 AEditorGameMode::AEditorGameMode()
 {
 	// Set player pawn
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Characters/EditorCharacter"));
-	if (PlayerPawnBPClass.Class != NULL)
-	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
+	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Characters/EditorCharacter"));
+	//if (PlayerPawnBPClass.Class != NULL)
+	//{
+	//	DefaultPawnClass = PlayerPawnBPClass.Class;
+	//}
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "EditotrCharacter returned NULL from EditorGameMode");
+	//}
 
 	//set enemy(s)
 	//static ConstructorHelpers::FClassFinder<ABaseCharacter> EnemyPawnBPClass(TEXT("Blueprint'/Game/Characters/Attacker'"));
