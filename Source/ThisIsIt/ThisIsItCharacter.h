@@ -19,7 +19,8 @@ class AThisIsItCharacter : public ABaseCharacter
 
 public:
 
-	int invert;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Controls)
+		int32 invert;
 
 	AThisIsItCharacter();
 

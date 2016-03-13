@@ -297,8 +297,8 @@ void AThisIsItCharacter::LeftBumper()
 void AThisIsItCharacter::TopButton()
 {
 	//just for now. should be moved to options
-	invert *= -1;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Inverting Y"));
+	//invert *= -1;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Inverting Y"));
 }
 
 void AThisIsItCharacter::RightButton()
