@@ -220,7 +220,7 @@ void AEditorPawn::RightBumperStart()
 {
 	if (menuOpen)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle right"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle right"));
 		if (Buttons.IsValidIndex(CurrentButton + 1))
 		{
 			CurrentButton += 1;
@@ -230,7 +230,7 @@ void AEditorPawn::RightBumperStart()
 			CurrentButton = 0;
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
 	}
 }
 
@@ -238,7 +238,7 @@ void AEditorPawn::LeftBumper()
 {
 	if (menuOpen)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle left"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("cycle left"));
 		if (Buttons.IsValidIndex(CurrentButton - 1))
 		{
 			CurrentButton -= 1;
@@ -247,7 +247,7 @@ void AEditorPawn::LeftBumper()
 		{
 			CurrentButton = Buttons.Num() - 1;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
 	}
 }
 
@@ -271,7 +271,7 @@ void AEditorPawn::LeftButton()
 {
 	if (isBuildingSelected)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("store item"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("store item"));
 		StoreBuilding();
 	}
 

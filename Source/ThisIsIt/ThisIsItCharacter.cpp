@@ -83,6 +83,9 @@ void AThisIsItCharacter::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAxis("MoveForward", this, &AThisIsItCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AThisIsItCharacter::MoveRight);
 
+	InputComponent->BindAction("LeftStick", IE_Pressed, this, &AThisIsItCharacter::RightBumperStart);
+	InputComponent->BindAction("LeftStick", IE_Released, this, &AThisIsItCharacter::RightBumperStop);
+
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
