@@ -185,15 +185,13 @@ void ABaseCharacter::Attack()
 	}
 }
 
-//StopAttacking() - return player to default state and all that stuff
-
-//there should be a stop attacking that returns to default state
 void ABaseCharacter::Reload()
 {
 	isReloading = true;
 	if (isAttacking)
 	{
-		isAttacking = false;
+		//isAttacking = false;
+		CurrentWeapon->FireEnd();
 	}
 }
 
@@ -202,6 +200,11 @@ void ABaseCharacter::ReloadComplete()
 {
 	isReloading = false;
 	CurrentWeapon->ReloadComplete();
+
+	if (isAttacking)
+	{
+		CurrentWeapon->FireBegin();
+	}
 }
 
 bool ABaseCharacter::CanShoot()

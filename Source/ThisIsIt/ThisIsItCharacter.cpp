@@ -239,8 +239,14 @@ void AThisIsItCharacter::RightTriggerStart()
 
 	if (CurrentWeapon != NULL)
 	{
-		CurrentWeapon->FireBegin();
-		isAttacking = true;
+		if (!isAttacking)
+		{
+			isAttacking = true;
+
+			if (CanShoot())
+				CurrentWeapon->FireBegin();
+
+		}
 	}
 	else
 	{
@@ -252,8 +258,11 @@ void AThisIsItCharacter::RightTriggerStop()
 {
 	if (CurrentWeapon != NULL)
 	{
-		isAttacking = false;
-		CurrentWeapon->FireEnd();
+		if (isAttacking)
+		{
+			isAttacking = false;
+			CurrentWeapon->FireEnd();
+		}
 	}
 	else
 	{
@@ -312,6 +321,8 @@ void AThisIsItCharacter::LeftButton()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Reloading!"));
 	if (!isReloading)
+	{
 		Reload();
 
+	}
 }
