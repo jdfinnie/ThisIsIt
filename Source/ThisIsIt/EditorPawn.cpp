@@ -42,6 +42,15 @@ AEditorPawn::AEditorPawn()
 	FString large = "Large";
 	Buttons.Add(large);
 
+	FString soldier = "Soldier";
+	Buttons.Add(large);
+
+	FString sniper = "Sniper";
+	Buttons.Add(large);
+
+	FString car = "Car";
+	Buttons.Add(large);
+
 	CurrentButton = 0;
 }
 
