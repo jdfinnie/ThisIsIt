@@ -52,6 +52,8 @@ AEditorPawn::AEditorPawn()
 	Buttons.Add(large);
 
 	CurrentButton = 0;
+
+	rotationDir = 1;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -241,6 +243,11 @@ void AEditorPawn::RightBumperStart()
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
 	}
+	else if (isBuildingSelected)
+	{
+		rotationDir = 1;
+		RotateActor();
+	}
 }
 
 void AEditorPawn::LeftBumper()
@@ -258,6 +265,11 @@ void AEditorPawn::LeftBumper()
 		}
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Button is: " + Buttons[CurrentButton]));
 	}
+	else if (isBuildingSelected)
+	{
+		rotationDir = -1;
+		RotateActor();
+	}
 }
 
 void AEditorPawn::TopButton()
@@ -273,6 +285,10 @@ void AEditorPawn::RightButton()
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("revert selected item"));
 		CancelMove();
+	}
+	else if (menuOpen)
+	{
+		menuOpen = false;
 	}
 }
 

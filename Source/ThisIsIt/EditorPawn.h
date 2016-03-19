@@ -57,6 +57,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = Event)
 		void StoreBuilding();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = Event)
+		void RotateActor();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Editor)
+		int32 rotationDir;
+
 	UFUNCTION(BlueprintImplementableEvent, Category = Function)
 		void Menu();
 
