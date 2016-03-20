@@ -121,7 +121,7 @@ public:
 	bool isRunning;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
 	bool isJumping;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Actions")
 	bool isAiming;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actions")
 	bool tryJump;
