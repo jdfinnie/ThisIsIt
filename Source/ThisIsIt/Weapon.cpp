@@ -30,6 +30,7 @@ void AWeapon::Tick(float DeltaTime)
 {
 	if (CurrentClip <= 0 && CurrentAmmo > 0)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "CallReload");
 		Reload();
 	}
 }
@@ -38,9 +39,18 @@ void AWeapon::FireBegin()
 {
 	isFiring = true;
 
-	//setting a timer to automatically fire again when the fire time has passed. cancels when button is released
-	//good for player/automatic weapons. Great for controlling AI shooting
-	GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+	if (FireMode == FireMode::Single)
+	{
+		Fire();
+		FireEnd();
+	}
+	else
+	{
+		//setting a timer to automatically fire again when the fire time has passed. cancels when button is released
+		//good for player/automatic weapons. Great for controlling AI shooting
+		GetWorldTimerManager().SetTimer(fireTimer, this, &AWeapon::Fire, WeaponInfo.TimeBetweenShots, true, false);
+	}
+
 	
 		//switch (FireMode)
 		//{
@@ -67,6 +77,25 @@ void AWeapon::FireEnd()
 	isFiring = false;
 
 	GetWorld()->GetTimerManager().ClearTimer(fireTimer);
+
+	if (MyPawn)
+	{
+		if (MyPawn->IsValidLowLevel())
+		{
+
+			ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn);
+			if (pawn)
+			{
+				pawn->isAttacking = false;
+			}
+		}
+		else
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "I JUST SAVED YOUR ASS!!!!!");
+			MyPawn = NULL;
+			//not a valid object?
+		}
+	}
 
 }
 
@@ -166,7 +195,7 @@ void AWeapon::Reload()
 			if (CurrentAmmo > 0)
 			{
 
-				ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn); //this throws a SERIOUS crash sometimes but I cant figure out why?
+				ABaseCharacter *pawn = Cast<ABaseCharacter>(MyPawn);
 				if (pawn)
 				{
 					pawn->Reload();
@@ -215,7 +244,7 @@ void AWeapon::InstantFire()
 	if (player)
 	{
 		AimDir = player->GetFollowCamera()->GetForwardVector();
-		StartTrace = player->GetFollowCamera()->GetComponentLocation();
+		StartTrace = WeaponMesh->GetSocketLocation("Muzzle");//player->GetFollowCamera()->GetComponentLocation();
 	}
 	else
 	{
@@ -254,7 +283,9 @@ void AWeapon::ProcessInstantHit(const FHitResult &Impact, const FVector &Origin,
 {
 	const FVector EndTrace = Origin + ShootDir * WeaponInfo.WeaponRange;
 	 FVector EndPoint;
-	
+
+	 //DrawDebugLine(this->GetWorld(), Origin, Impact.TraceEnd, FColor::Red, true, 10000, 10.f);
+	 
 	 bool hit;
 
 	if (Impact.GetActor())
