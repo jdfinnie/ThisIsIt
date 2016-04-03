@@ -30,7 +30,7 @@ void AWeapon::Tick(float DeltaTime)
 {
 	if (CurrentClip <= 0 && CurrentAmmo > 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "CallReload");
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, "CallReload");
 		Reload();
 	}
 }
