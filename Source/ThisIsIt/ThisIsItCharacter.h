@@ -39,6 +39,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isPrimaryEquipped;
 
+	UFUNCTION(BlueprintCallable, Category = Event)
+		void StopRunning();
+
+	UFUNCTION(BlueprintCallable, Category = Event)
+		void StopActions();
+
 protected:
 
 	/** Called for forwards/backward input */

@@ -129,6 +129,10 @@ void AThisIsItCharacter::MoveForward(float Value)
 
 		AddMovementInput(Direction, Value);
 	}
+	else if (Value == 0 && isRunning)
+	{
+		StopRunning();
+	}
 }
 
 void AThisIsItCharacter::MoveRight(float Value)
@@ -139,7 +143,6 @@ void AThisIsItCharacter::MoveRight(float Value)
 		const FRotator Rotation = GetActorRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
 		AddMovementInput(Direction, Value / 2);
-
 	}
 }
 
@@ -246,6 +249,11 @@ void AThisIsItCharacter::RightTriggerStart()
 			if (CanShoot())
 				CurrentWeapon->FireBegin();
 
+			if (isRunning)
+			{
+				StopRunning();
+			}
+
 		}
 	}
 	else
@@ -275,6 +283,11 @@ void AThisIsItCharacter::LeftTriggerStart()
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Aiming!"));
 	isAiming = true;
 	FollowCamera->FieldOfView = 60;
+
+	if (isRunning)
+	{
+		StopRunning();
+	}
 }
 
 void AThisIsItCharacter::LeftTriggerStop()
@@ -287,15 +300,41 @@ void AThisIsItCharacter::LeftTriggerStop()
 void AThisIsItCharacter::RightBumperStart()
 {
 
-	GetCharacterMovement()->MaxWalkSpeed = 1200;
-	isRunning = true;
+	if (!isRunning && !isAiming && !isAttacking && !isReloading)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 1200;
+		isRunning = true;
+	}
+	else
+	{
+		StopRunning();
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Run?"));
+}
+
+void AThisIsItCharacter::StopRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600;
+	isRunning = false;
+}
+
+void AThisIsItCharacter::StopActions()
+{
+	StopRunning();
+
+	//StopAiming()
+	isAiming = false;
+	FollowCamera->FieldOfView = 90;
+
+	//StopAttacking()
+	isAttacking = false;
+	CurrentWeapon->FireEnd();
 }
 
 void AThisIsItCharacter::RightBumperStop()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 600;
-	isRunning = false;
+	//GetCharacterMovement()->MaxWalkSpeed = 600;
+	//isRunning = false;
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Run?"));
 }
 void AThisIsItCharacter::LeftBumper()
@@ -323,6 +362,5 @@ void AThisIsItCharacter::LeftButton()
 	if (!isReloading)
 	{
 		Reload();
-
 	}
 }
