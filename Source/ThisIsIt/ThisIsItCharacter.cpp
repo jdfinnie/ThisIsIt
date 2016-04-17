@@ -15,8 +15,8 @@ AThisIsItCharacter::AThisIsItCharacter()
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
+	BaseAimRate = 15.f;//Speed while aiming
+	BaseLookRate = 35.f;//normal look speed
 
 	// Configure character movement
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); 
@@ -108,15 +108,29 @@ void AThisIsItCharacter::Select()
 void AThisIsItCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	float LookRate;
+
+	if (isAiming)
+		LookRate = BaseAimRate;
+	else
+		LookRate = BaseLookRate;
+
+	AddControllerYawInput(Rate * LookRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AThisIsItCharacter::LookUpAtRate(float Rate)
 {
 	Rate *= invert; //this inverts the y for controllers and the likes
 
+	float LookRate;
+
+	if (isAiming)
+		LookRate = BaseAimRate;
+	else
+		LookRate = BaseLookRate;
+
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(Rate * LookRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AThisIsItCharacter::MoveForward(float Value)
